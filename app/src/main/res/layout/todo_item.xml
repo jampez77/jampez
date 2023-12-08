@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <data>
+
+    <variable
+      name="todo"
+      type="com.example.jampez.data.entities.ToDo" />
+
+    <variable
+      name="adapter"
+      type="com.example.jampez.features.todo.TodoAdapter" />
+
+  </data>
+
+    <com.google.android.material.card.MaterialCardView
+      android:theme="@style/Theme.MaterialComponents.Light.Bridge"
+      android:id="@+id/main_layout"
+      android:transitionName="list_item"
+      android:clickable="true"
+      android:focusable="true"
+      app:cardBackgroundColor="?colorPrimary"
+      android:onClick="@{() -> adapter.onTodoClicked(todo)}"
+      app:cardCornerRadius="@dimen/medium_16"
+      app:cardElevation="@dimen/small_2"
+      app:cardUseCompatPadding="true"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+      <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.textview.MaterialTextView
+          android:id="@+id/todoText"
+          style="@style/TitleXXS"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:padding="@dimen/medium_10"
+          android:ellipsize="end"
+          android:maxLines="2"
+          android:scrollHorizontally="false"
+          android:text="@{todo.todo}"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toEndOf="@+id/completed"
+          app:layout_constraintTop_toTopOf="parent"
+          tools:text="Contribute code or a monetary donation to an open-source software project" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+          android:id="@+id/completed"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:checked="@{todo.completed}"
+          android:onCheckedChanged="@{(compoundButton, isChecked) -> adapter.onTodoCheckedChanged(isChecked, todo)}"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toStartOf="parent"/>
+
+      </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

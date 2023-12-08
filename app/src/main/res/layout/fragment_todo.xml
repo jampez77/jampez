@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools">
+
+  <data>
+
+    <import type="android.view.View" />
+
+
+    <variable
+      name="viewModel"
+      type="com.example.jampez.features.todo.TodoViewModel" />
+
+    <variable
+      name="adapter"
+      type="com.example.jampez.features.todo.TodoAdapter" />
+
+
+  </data>
+
+  <androidx.coordinatorlayout.widget.CoordinatorLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+      android:id="@+id/appBarLayout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:elevation="0dp"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent">
+
+      <com.google.android.material.appbar.CollapsingToolbarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        app:contentScrim="@color/btn_green"
+        app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+
+        <androidx.appcompat.widget.AppCompatImageView
+          android:id="@+id/userImage"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:adjustViewBounds="true"
+
+          android:layout_alignParentTop="true"
+          android:layout_alignParentStart="true"
+          android:layout_alignParentEnd="true"
+          app:layout_collapseMode="parallax"
+          imageUrl="@{viewModel.user.image}"
+          app:layout_collapseParallaxMultiplier="0.7"/>
+
+        <androidx.appcompat.widget.Toolbar
+          android:id="@+id/toolbar"
+          android:layout_width="match_parent"
+          android:layout_height="?attr/actionBarSize"
+          app:layout_collapseMode="pin"
+          android:layout_alignParentTop="true"
+          android:layout_alignParentStart="true"
+          android:layout_alignParentEnd="true"
+          app:titleTextColor="@color/white"
+          app:title="@{viewModel.user.firstName}"
+          app:layout_scrollFlags="scroll|enterAlways"
+          app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+      </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+      android:id="@+id/signOutAction"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_margin="@dimen/medium_30"
+      android:layout_marginBottom="28dp"
+      android:backgroundTint="@color/colorSecondary"
+      android:contentDescription="@string/sign_out"
+      android:src="@drawable/logout"
+      android:onClick="@{() -> viewModel.signOut()}"
+      app:layout_anchor="@id/appBarLayout"
+      app:layout_anchorGravity="bottom|end"
+      app:tint="@color/colorAccent" />
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+      android:id="@+id/swipeRefreshLayout"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      app:layout_anchor="@id/appBarLayout"
+      app:layout_anchorGravity="bottom|end"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+
+      <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/appBarLayout">
+
+        <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/todoItems"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:background="@color/white"
+          app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+          app:setAdapter="@{adapter}"
+          app:submitList="@{viewModel.allTodos}"
+          android:elevation="10dp"
+          app:spanCount="1"
+          tools:itemCount="100"
+          tools:listitem="@layout/todo_item"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:background="@color/white"
+          android:padding="@dimen/medium_10">
+
+          <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/emptyListText"
+            style="@style/TitleL"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="center_horizontal|top"
+            android:text="@string/no_todos" />
+
+          <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/loadingList"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:adjustViewBounds="true"
+            android:alpha="0.0"
+            app:layout_constraintTop_toBottomOf="@id/emptyListText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:src="@drawable/loading_list" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+      </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+  </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

@@ -1,0 +1,17 @@
+package com.example.jampez.utils.constants
+
+const val ID = "id"
+const val FIRST_NAME  = "firstName"
+const val EMAIL = "email"
+const val PASSWORD = "password"
+const val IMAGE = "image"
+const val TODO = "todo"
+const val COMPLETED = "completed"
+const val snackbarText = "snackbarText"
+const val userImage = "user.png"
+const val USERID = "userId"
+const val USER_ID = "user_id"
+const val HOST = "https://dummyjson.com/"
+const val USERS = "users"
+const val TODOS = "todos"
+const val PREFERENCES_FILE_KEY = "com.example.jampez.settings_preferences"

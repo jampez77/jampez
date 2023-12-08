@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  app:startDestination="@id/loginFragment">
+
+  <fragment
+    android:id="@+id/loginFragment"
+    android:name="com.example.jampez.features.login.LoginFragment"
+    tools:layout="@layout/fragment_login"
+    android:label="LoginFragment" >
+
+    <action
+      android:id="@+id/action_loginFragment_to_todoFragment"
+      app:popUpTo="@id/loginFragment"
+      app:popUpToInclusive="true"
+      app:destination="@id/todoFragment"
+      app:enterAnim="@android:anim/fade_in"
+      app:exitAnim="@android:anim/fade_out"
+      app:popEnterAnim="@android:anim/fade_in"
+      app:popExitAnim="@android:anim/fade_out"/>
+
+  </fragment>
+
+  <fragment
+    android:id="@+id/todoFragment"
+    android:name="com.example.jampez.features.todo.TodoFragment"
+    tools:layout="@layout/fragment_todo"
+    android:label="TodoFragment" >
+
+    <argument
+      android:name="user_id"
+      app:nullable="false"
+      app:argType="long" />
+
+    <action
+      android:id="@+id/action_todoFragment_to_loginFragment"
+      app:popUpTo="@id/todoFragment"
+      app:popUpToInclusive="true"
+      app:destination="@id/loginFragment"
+      app:enterAnim="@anim/slide_left"
+      app:exitAnim="@anim/slide_right"
+      app:popEnterAnim="@anim/slide_left"
+      app:popExitAnim="@anim/slide_right"/>
+
+  </fragment>
+
+</navigation>

@@ -1,0 +1,66 @@
+<resources>
+  <!-- Base application theme. -->
+  <style name="Theme.Jampez" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <!-- Primary brand color. -->
+    <item name="colorPrimary">@color/dark_blue</item>
+    <item name="colorPrimaryVariant">@color/btn_green</item>
+    <item name="colorOnPrimary">@color/white</item>
+    <!-- Secondary brand color. -->
+    <item name="colorSecondary">@color/white</item>
+    <item name="colorSecondaryVariant">@color/white</item>
+    <item name="colorOnSecondary">@color/black</item>
+    <!-- Status bar color. -->
+    <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+    <!-- Customize your theme here. -->
+  </style>
+
+
+  <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+    <item name="windowSplashScreenBackground">@color/dark_blue</item>
+    <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+    <item name="windowSplashScreenAnimationDuration">200</item>
+    <!-- Set the theme of the Activity that directly follows your splash screen. -->
+    <!-- Required -->
+    <item name="postSplashScreenTheme">@style/Theme.Jampez</item>
+  </style>
+
+  <style name="WrapContentDialogWithUpDownAnimations" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+    <item name="windowFixedHeightMajor">0dp</item>
+    <item name="windowFixedHeightMinor">0dp</item>
+    <item name="android:windowEnterAnimation">@anim/slide_up</item>
+    <item name="android:windowExitAnimation">@anim/slide_down</item>
+  </style>
+
+  <style name="TitleL">
+    <item name="android:textSize">@dimen/text_40</item>
+    <item name="android:textColor">@color/colorAccent</item>
+    <item name="android:fontWeight">700</item>
+    <item name="android:textStyle">bold</item>
+  </style>
+
+  <style name="TitleM" parent="TitleL">
+    <item name="android:textSize">@dimen/text_40</item>
+  </style>
+
+  <style name="TitleS" parent="TitleL">
+    <item name="android:textSize">@dimen/text_24</item>
+  </style>
+
+  <style name="TitleXS" parent="TitleL">
+    <item name="android:textSize">@dimen/text_18</item>
+  </style>
+
+  <style name="TitleXXS" parent="TitleL">
+    <item name="android:textSize">@dimen/text_16</item>
+  </style>
+
+  <style name="TitleXXXS" parent="TitleL">
+    <item name="android:textSize">@dimen/text_12</item>
+  </style>
+
+  <style name="ErrorText">
+    <item name="android:textColor">@color/error_text</item>
+    <item name="android:textStyle">bold</item>
+  </style>
+
+</resources>
