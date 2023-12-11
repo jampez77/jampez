@@ -1,41 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.motion.widget.MotionLayout
+<androidx.constraintlayout.widget.ConstraintLayout
+  android:layout_height="match_parent"
+  android:layout_width="match_parent"
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
-  android:id="@+id/motionLayout"
-  app:layoutDescription="@xml/login_transition_scene"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  tools:context=".MainActivity">
-
-  <androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/loadingMask"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:background="@drawable/loading_mask"
-    android:elevation="@dimen/medium_10"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintStart_toStartOf="parent">
-
-    <androidx.appcompat.widget.AppCompatImageView
-      android:id="@+id/sigingIn"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:src="@drawable/loading_list" />
-
-  </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-  <androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/loadingMask2"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:background="@drawable/loading_mask"
-    android:elevation="@dimen/small_6"
-    android:rotation="180"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent"/>
+  xmlns:tools="http://schemas.android.com/tools">
 
   <androidx.fragment.app.FragmentContainerView
     android:id="@+id/nav_host_fragment"
@@ -49,4 +18,40 @@
     app:layout_constraintTop_toTopOf="parent"
     app:navGraph="@navigation/navigation"/>
 
-</androidx.constraintlayout.motion.widget.MotionLayout>
+  <androidx.constraintlayout.motion.widget.MotionLayout
+    android:id="@+id/motionLayout"
+    app:layoutDescription="@xml/login_transition_scene"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+      android:id="@+id/loadingMask"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:background="@drawable/loading_mask"
+      android:elevation="@dimen/medium_10"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintStart_toStartOf="parent">
+
+      <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/sigingIn"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/loading_list" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+      android:id="@+id/loadingMask2"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:background="@drawable/loading_mask"
+      android:elevation="@dimen/small_6"
+      android:rotation="180"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintBottom_toBottomOf="parent"/>
+
+  </androidx.constraintlayout.motion.widget.MotionLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

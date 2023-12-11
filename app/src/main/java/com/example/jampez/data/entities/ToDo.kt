@@ -2,10 +2,8 @@ package com.example.jampez.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.example.jampez.utils.constants.COMPLETED
-import com.example.jampez.utils.constants.ID
 import com.example.jampez.utils.constants.USERID
 
 @Entity

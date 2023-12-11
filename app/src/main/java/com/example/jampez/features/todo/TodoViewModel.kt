@@ -8,7 +8,6 @@ import com.example.jampez.data.api.responses.FetchTodos
 import com.example.jampez.data.api.wrappers.ResourceFactory
 import com.example.jampez.data.api.wrappers.Status
 import com.example.jampez.data.entities.ToDo
-import com.example.jampez.data.models.User
 import com.example.jampez.data.repositories.TodoRepository
 import com.example.jampez.data.repositories.UserRepository
 import kotlinx.coroutines.Dispatchers.IO

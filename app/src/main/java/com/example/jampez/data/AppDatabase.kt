@@ -12,10 +12,5 @@ import com.example.jampez.data.entities.ToDo
     version = 1,
     exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
-
     abstract fun todoDao(): ToDoDao
-
-    fun clearDatabase() {
-        clearAllTables()
-    }
 }

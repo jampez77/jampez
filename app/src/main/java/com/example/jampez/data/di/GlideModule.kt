@@ -16,13 +16,8 @@ val glideModule = module {
 fun provideRequestManager(
     application: Application,
     requestOptions: RequestOptions
-): RequestManager {
-    return Glide.with(application)
-        .setDefaultRequestOptions(requestOptions)
-}
+) = Glide.with(application).setDefaultRequestOptions(requestOptions)
 
-fun provideRequestOptions(): RequestOptions {
-    return RequestOptions()
+fun provideRequestOptions() = RequestOptions()
         .placeholder(R.drawable.profile)
         .error(R.drawable.profile)
-}

@@ -12,9 +12,7 @@ import com.example.jampez.databinding.FragmentLoginBinding
 import com.example.jampez.features.base.BaseFragment
 import com.example.jampez.utils.ConnectionLiveData
 import com.example.jampez.utils.constants.USER_ID
-import com.example.jampez.utils.constants.snackbarText
 import com.example.jampez.utils.extensions.isEmailValid
-import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -26,7 +24,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
     private val loginViewModel: LoginViewModel by viewModel()
     private lateinit var navController: NavController
     private val networkConnection: ConnectionLiveData by inject()
-    private val snackbar: Snackbar by inject { parametersOf(view, snackbarText, LENGTH_LONG) }
+    private val snackbar: Snackbar by inject { parametersOf(requireActivity()) }
 
     private val observers by lazy {
         networkConnection.observe(viewLifecycleOwner) { isConnected ->
@@ -34,18 +32,18 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
         }
 
         loginViewModel.emailErrorState.observe(viewLifecycleOwner) { showError ->
-            if (showError) {
-                binding.emailLayout.error = getString(R.string.invalid_email)
+            binding.emailLayout.error = if (showError) {
+                getString(R.string.invalid_email)
             } else {
-                binding.emailLayout.error = null
+                null
             }
         }
 
         loginViewModel.passwordErrorState.observe(viewLifecycleOwner) { showError ->
-            if (showError) {
-                binding.passwordLayout.error = getString(R.string.invalid_password)
+            binding.passwordLayout.error = if (showError) {
+                getString(R.string.invalid_password)
             } else {
-                binding.passwordLayout.error = null
+                null
             }
         }
 
@@ -68,11 +66,13 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
                 val mainActivity = (activity as MainActivity)
                 mainActivity.hideLoadingTransition()
 
-                if (loginViewModel.networkConnected) {
-                    snackbar.setText(getString(R.string.user_not_found))
-                } else {
-                    snackbar.setText(getString(R.string.no_network_connection))
-                }
+                snackbar.setText(
+                    if (loginViewModel.networkConnected) {
+                        getString(R.string.user_not_found)
+                    } else {
+                        getString(R.string.no_network_connection)
+                    }
+                )
                 snackbar.show()
             }
         }

@@ -17,7 +17,7 @@ fun provideOkHttpClient() = OkHttpClient.Builder()
     .addNetworkInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
     .build()
 
-fun providesRetrofit(okHttpClient: OkHttpClient) = Retrofit.Builder()
+fun providesRetrofit(okHttpClient: OkHttpClient): DummyJsonApi = Retrofit.Builder()
     .baseUrl(HOST)
     .addConverterFactory(GsonConverterFactory.create())
     .client(okHttpClient)

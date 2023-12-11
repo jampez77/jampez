@@ -1,18 +1,14 @@
 package com.example.jampez
 
-import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.jampez.databinding.ActivityMainBinding
-import com.example.jampez.utils.ConnectionLiveData
 import com.example.jampez.utils.constants.USER_ID
 import com.example.jampez.utils.extensions.startLoadingAnimation
 import com.example.jampez.utils.extensions.stopLoadingAnimation
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
@@ -21,8 +17,6 @@ class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainViewModel by viewModel()
     private lateinit var navController: NavController
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()

@@ -16,11 +16,9 @@ import com.example.jampez.R
 import com.example.jampez.databinding.FragmentTodoBinding
 import com.example.jampez.features.base.BaseFragment
 import com.example.jampez.utils.ConnectionLiveData
-import com.example.jampez.utils.constants.snackbarText
 import com.example.jampez.utils.constants.userImage
 import com.example.jampez.utils.extensions.startLoadingAnimation
 import com.example.jampez.utils.extensions.stopLoadingAnimation
-import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -32,12 +30,12 @@ import java.io.File
 
 class TodoFragment : BaseFragment<FragmentTodoBinding>(FragmentTodoBinding::inflate) {
 
-    val todoViewModel: TodoViewModel by viewModel()
+    private val todoViewModel: TodoViewModel by viewModel()
     private lateinit var navController: NavController
     private var userId: Long = -1
     private val args by navArgs<TodoFragmentArgs>()
     private val networkConnection: ConnectionLiveData by inject()
-    private val snackbar: Snackbar by inject { parametersOf(view, snackbarText, LENGTH_LONG) }
+    private val snackbar: Snackbar by inject { parametersOf(requireActivity()) }
     private val todoAdapter = TodoAdapter()
 
     private val alertDialog: AlertDialog by inject { parametersOf(requireActivity(), R.style.WrapContentDialogWithUpDownAnimations) }
@@ -47,8 +45,6 @@ class TodoFragment : BaseFragment<FragmentTodoBinding>(FragmentTodoBinding::infl
             if (todos.isNullOrEmpty()) {
                 binding.emptyListText.visibility = VISIBLE
                 binding.todoItems.visibility = GONE
-                snackbar.setText(getString(R.string.todos_not_found))
-                snackbar.show()
             } else {
                 binding.emptyListText.visibility = GONE
                 binding.todoItems.visibility = VISIBLE
@@ -109,13 +105,23 @@ class TodoFragment : BaseFragment<FragmentTodoBinding>(FragmentTodoBinding::infl
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val mainActivity = (activity as MainActivity)
+        navController = findNavController(mainActivity, R.id.nav_host_fragment)
+
+        args.let {
+            userId = it.userId
+        }
+
         binding.apply {
             viewModel = todoViewModel
             adapter = todoAdapter
         }
         observers
-        navController = findNavController(requireActivity(), R.id.nav_host_fragment)
+        mainActivity.hideLoadingTransition()
+        initClickListeners()
+    }
 
+    private fun initClickListeners() {
         todoAdapter.setItemClickListener {
             snackbar.setText(it.todo)
             snackbar.show()
@@ -127,13 +133,6 @@ class TodoFragment : BaseFragment<FragmentTodoBinding>(FragmentTodoBinding::infl
                 todoViewModel.updateTodo(todo)
             }
         }
-
-        val mainActivity = (activity as MainActivity)
-        args.let {
-            userId = it.userId
-        }
-
-        mainActivity.hideLoadingTransition()
     }
 
     private fun signOut() {

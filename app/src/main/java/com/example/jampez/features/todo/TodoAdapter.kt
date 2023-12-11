@@ -1,14 +1,11 @@
 package com.example.jampez.features.todo
 
 import android.view.LayoutInflater.from
-import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import androidx.recyclerview.widget.DiffUtil
 import com.example.jampez.data.entities.ToDo
 import com.example.jampez.databinding.TodoItemBinding
 import com.example.jampez.utils.DataBoundListAdapter
-import java.util.ArrayList
 
 class TodoAdapter : DataBoundListAdapter<ToDo, TodoItemBinding>(
     TodoItemResultCallback()
