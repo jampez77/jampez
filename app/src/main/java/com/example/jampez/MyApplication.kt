@@ -3,10 +3,9 @@ package com.example.jampez
 import android.app.Application
 import com.example.jampez.data.di.appModule
 import com.example.jampez.data.di.dataProviderModule
-import com.example.jampez.data.di.dbModule
+import com.example.jampez.data.di.persistedDataModule
 import com.example.jampez.data.di.glideModule
 import com.example.jampez.data.di.networkModule
-import com.example.jampez.data.di.preferencesModule
 import com.example.jampez.data.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -24,10 +23,9 @@ class MyApplication : Application() {
             modules(
                 modules = listOf(
                     viewModelModule,
-                    dbModule,
+                    persistedDataModule,
                     networkModule,
                     dataProviderModule,
-                    preferencesModule,
                     glideModule,
                     appModule
                 )

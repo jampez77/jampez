@@ -23,6 +23,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
+import okhttp3.internal.format
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -141,7 +142,7 @@ class TodoFragment : BaseFragment<FragmentTodoBinding>(FragmentTodoBinding::infl
             lifecycleScope.launch(IO) {
                     if (todoViewModel.deleteUser(userId)) {
 
-                        val file = File(context?.filesDir, userImage)
+                        val file = File(context?.filesDir, format(userImage, userId))
 
                         if (file.exists()) {
                             file.delete()

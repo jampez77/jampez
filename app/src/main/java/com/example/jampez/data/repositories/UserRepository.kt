@@ -10,6 +10,7 @@ import com.example.jampez.utils.constants.EMAIL
 import com.example.jampez.utils.constants.FIRST_NAME
 import com.example.jampez.utils.constants.ID
 import com.example.jampez.utils.constants.IMAGE
+import com.example.jampez.utils.constants.PASSPHRASE
 import com.example.jampez.utils.constants.PASSWORD
 import org.koin.java.KoinJavaComponent.inject
 
@@ -20,6 +21,20 @@ class UserRepository(private val dummyJsonApi: DummyJsonApi) : IUserRepository {
     )
 
     override suspend fun fetchUsers(): ApiResponse<FetchUsers> = ApiResponse(dummyJsonApi.fetchUsers())
+
+    override fun saveDatabasePassPhrase(passPhrase: String?) : Boolean {
+        var passPhrasedSaved: Boolean
+        prefs.run {
+            passPhrasedSaved = contains(PASSPHRASE)
+            if (!passPhrasedSaved) {
+                edit {
+                    putString(PASSPHRASE, passPhrase)
+                    passPhrasedSaved = true
+                }
+            }
+        }
+        return passPhrasedSaved
+    }
 
     override fun saveUser(user: User?) : Boolean {
         var userSaved = false

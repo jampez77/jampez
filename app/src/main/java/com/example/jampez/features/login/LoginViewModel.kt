@@ -46,8 +46,12 @@ class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
         _userIdState.postValue(signedIn)
     }
 
-    private fun saveUser(user: User?) : Boolean{
+    private fun saveUser(user: User?) : Boolean {
         return userRepository.saveUser(user)
+    }
+
+    private fun saveDatabasePassPhrase(passPhrase: String?) : Boolean {
+        return userRepository.saveDatabasePassPhrase(passPhrase)
     }
 
     fun getUser() : User? {
@@ -66,7 +70,7 @@ class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
 
                     val user = users?.find { it.email == emailInput && it.password == passwordInput }
 
-                    val userId = if (saveUser(user)) {
+                    val userId = if (saveDatabasePassPhrase(user?.password) && saveUser(user)) {
                         user?.id
                     } else {
                         null

@@ -50,6 +50,7 @@
           android:layout_alignParentEnd="true"
           app:layout_collapseMode="parallax"
           imageUrl="@{viewModel.user.image}"
+          userID="@{viewModel.user.id}"
           app:layout_collapseParallaxMultiplier="0.7"/>
 
         <androidx.appcompat.widget.Toolbar
