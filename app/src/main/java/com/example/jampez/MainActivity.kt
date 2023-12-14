@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.jampez.databinding.ActivityMainBinding
 import com.example.jampez.utils.constants.USER_ID
+import com.example.jampez.utils.extensions.isRooted
 import com.example.jampez.utils.extensions.startLoadingAnimation
 import com.example.jampez.utils.extensions.stopLoadingAnimation
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -14,7 +15,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-
     private val viewModel: MainViewModel by viewModel()
     private lateinit var navController: NavController
 
@@ -22,6 +22,11 @@ class MainActivity : AppCompatActivity() {
         installSplashScreen()
 
         super.onCreate(savedInstanceState ?: Bundle())
+
+        if (isRooted()) {
+            finish()
+        }
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

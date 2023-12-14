@@ -1,14 +1,21 @@
 package com.example.jampez.utils.extensions
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.drawable.AnimationDrawable
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKeys
+import com.example.jampez.utils.constants.userImage
+import com.scottyab.rootbeer.BuildConfig
+import com.scottyab.rootbeer.RootBeer
+import okhttp3.internal.format
 import java.io.File
-import java.io.FileOutputStream
+import java.io.IOException
+import java.util.UUID
 import java.util.regex.Pattern
 import java.util.regex.Pattern.CASE_INSENSITIVE
+import kotlin.jvm.Throws
 
 fun String.isEmailValid(): Boolean {
     if (isEmpty()) {
@@ -37,21 +44,33 @@ fun AppCompatImageView.stopLoadingAnimation() {
     }
 }
 
-fun File.encryptFile(file: File, context: Context) = EncryptedFile.Builder(
-    file,
-    context,
-    MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
-    EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-).build().openFileOutput()
+fun File.encryptFile(context: Context, bitmap: Bitmap) {
 
-fun File.decryptFile(file: File, context: Context) : File {
+    val encryptedFile = EncryptedFile.Builder(
+        this,
+        context,
+        MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
+        EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+    ).build()
+
+    val out = encryptedFile.openFileOutput()
+
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+    out.flush()
+    out.close()
+}
+
+fun File.decryptFile(context: Context, tmpName: String) : File {
     val inputStream = EncryptedFile.Builder(
-        file,
+        this,
         context,
         MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
         EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
     ).build().openFileInput()
     val bytes = inputStream.readBytes()
-    file.writeBytes(bytes)
-    return file
+    val tmp = File.createTempFile("_${tmpName}", null, context.filesDir)
+    tmp.writeBytes(bytes)
+    return tmp
 }
+
+fun Context.isRooted() = RootBeer(this).isRootedWithoutBusyBoxCheck && !BuildConfig.DEBUG

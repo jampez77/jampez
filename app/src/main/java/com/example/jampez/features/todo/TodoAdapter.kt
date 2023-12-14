@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import com.example.jampez.data.entities.ToDo
 import com.example.jampez.databinding.TodoItemBinding
-import com.example.jampez.utils.DataBoundListAdapter
+import com.example.jampez.utils.binding.DataBoundListAdapter
 
 class TodoAdapter : DataBoundListAdapter<ToDo, TodoItemBinding>(
     TodoItemResultCallback()

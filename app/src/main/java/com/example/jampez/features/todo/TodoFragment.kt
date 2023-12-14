@@ -11,23 +11,27 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.work.Constraints
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.example.jampez.MainActivity
 import com.example.jampez.R
 import com.example.jampez.databinding.FragmentTodoBinding
 import com.example.jampez.features.base.BaseFragment
 import com.example.jampez.utils.ConnectionLiveData
-import com.example.jampez.utils.constants.userImage
+import com.example.jampez.utils.RemoveUserFilesWorker
+import com.example.jampez.utils.constants.USERID
 import com.example.jampez.utils.extensions.startLoadingAnimation
 import com.example.jampez.utils.extensions.stopLoadingAnimation
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
-import okhttp3.internal.format
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
-import java.io.File
 
 class TodoFragment : BaseFragment<FragmentTodoBinding>(FragmentTodoBinding::inflate) {
 
@@ -36,6 +40,7 @@ class TodoFragment : BaseFragment<FragmentTodoBinding>(FragmentTodoBinding::infl
     private var userId: Long = -1
     private val args by navArgs<TodoFragmentArgs>()
     private val networkConnection: ConnectionLiveData by inject()
+    private val workManager: WorkManager by inject()
     private val snackbar: Snackbar by inject { parametersOf(requireActivity()) }
     private val todoAdapter = TodoAdapter()
 
@@ -142,15 +147,33 @@ class TodoFragment : BaseFragment<FragmentTodoBinding>(FragmentTodoBinding::infl
             lifecycleScope.launch(IO) {
                     if (todoViewModel.deleteUser(userId)) {
 
-                        val file = File(context?.filesDir, format(userImage, userId))
-
-                        if (file.exists()) {
-                            file.delete()
-                        }
                         lifecycleScope.launch(Main) {
-                            dialog.dismiss()
-                            navController.navigate(R.id.action_todoFragment_to_loginFragment)
+                            val constraints = Constraints.Builder().build()
+
+                            val data = Data.Builder()
+                            data.putLong(USERID, userId)
+
+                            val task = OneTimeWorkRequest.Builder(RemoveUserFilesWorker::class.java)
+                                .setInputData(data.build())
+                                .setConstraints(constraints)
+                                .build()
+
+                            workManager.getWorkInfoByIdLiveData(task.id).observe(this@TodoFragment) { workInfo ->
+
+                                if (workInfo.state.isFinished){
+                                    dialog.dismiss()
+                                    if(workInfo.state == WorkInfo.State.SUCCEEDED) {
+                                        navController.navigate(R.id.action_todoFragment_to_loginFragment)
+                                    } else {
+                                        snackbar.setText(getString(R.string.unable_to_sign_out))
+                                        snackbar.show()
+                                    }
+                                }
+
+                            }
+                            workManager.enqueue(task)
                         }
+
                     }
 
                 }

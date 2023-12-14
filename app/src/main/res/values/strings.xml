@@ -14,6 +14,7 @@
   <string name="yes">Yes</string>
   <string name="no">No</string>
   <string name="user_not_found">User not found</string>
+  <string name="unable_to_sign_out">Unable to Sign out! Please try again</string>
   <string name="todos_not_found">We could not find any Todos for you</string>
   <string name="no_network_connection">No Network Connection</string>
   <string name="no_todos">Pull to refresh!</string>
