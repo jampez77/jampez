@@ -3,6 +3,7 @@ package com.example.jampez.utils.extensions
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.AnimationDrawable
+import android.os.FileUtils
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKeys
@@ -16,6 +17,9 @@ import java.util.UUID
 import java.util.regex.Pattern
 import java.util.regex.Pattern.CASE_INSENSITIVE
 import kotlin.jvm.Throws
+
+
+fun String.isEquals(string: String) = this == string
 
 fun String.isEmailValid(): Boolean {
     if (isEmpty()) {
@@ -60,6 +64,19 @@ fun File.encryptFile(context: Context, bitmap: Bitmap) {
     out.close()
 }
 
+fun Long.deleteTmpFiles(context: Context){
+    context.cacheDir?.let { cacheDir ->
+        if (cacheDir.exists()) {
+
+            cacheDir.listFiles()?.forEach {
+                if (it.name.startsWith("_user_${this}") && it.extension == "tmp") {
+                    it.delete()
+                }
+            }
+        }
+    }
+}
+
 fun File.decryptFile(context: Context, tmpName: String) : File {
     val inputStream = EncryptedFile.Builder(
         this,
@@ -68,7 +85,7 @@ fun File.decryptFile(context: Context, tmpName: String) : File {
         EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
     ).build().openFileInput()
     val bytes = inputStream.readBytes()
-    val tmp = File.createTempFile("_${tmpName}", null, context.filesDir)
+    val tmp = File.createTempFile("_${tmpName}", null, context.cacheDir)
     tmp.writeBytes(bytes)
     return tmp
 }

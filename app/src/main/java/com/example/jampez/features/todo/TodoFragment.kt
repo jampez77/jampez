@@ -7,7 +7,6 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.fragment.navArgs
@@ -21,14 +20,11 @@ import com.example.jampez.R
 import com.example.jampez.databinding.FragmentTodoBinding
 import com.example.jampez.features.base.BaseFragment
 import com.example.jampez.utils.ConnectionLiveData
-import com.example.jampez.utils.RemoveUserFilesWorker
+import com.example.jampez.utils.worker.SignOutUserWorker
 import com.example.jampez.utils.constants.USERID
 import com.example.jampez.utils.extensions.startLoadingAnimation
 import com.example.jampez.utils.extensions.stopLoadingAnimation
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -40,13 +36,41 @@ class TodoFragment : BaseFragment<FragmentTodoBinding>(FragmentTodoBinding::infl
     private var userId: Long = -1
     private val args by navArgs<TodoFragmentArgs>()
     private val networkConnection: ConnectionLiveData by inject()
+    private var networkConnected: Boolean = false
     private val workManager: WorkManager by inject()
     private val snackbar: Snackbar by inject { parametersOf(requireActivity()) }
+
+    private val userSignOutRequestBuilder: OneTimeWorkRequest.Builder by inject<OneTimeWorkRequest.Builder> {
+        parametersOf(
+            OneTimeWorkRequest.Builder(SignOutUserWorker::class.java)
+            .setInputData(Data.Builder().putLong(USERID, userId).build())
+            .setConstraints(Constraints.Builder().build())
+        )
+    }
+
+    private val userSignOutRequest by lazy { userSignOutRequestBuilder.build() }
+
     private val todoAdapter = TodoAdapter()
 
     private val alertDialog: AlertDialog by inject { parametersOf(requireActivity(), R.style.WrapContentDialogWithUpDownAnimations) }
 
     private val observers by lazy {
+
+        workManager.getWorkInfoByIdLiveData(userSignOutRequest.id).observe(this@TodoFragment) { workInfo ->
+
+            if (workInfo.state.isFinished) {
+                if (alertDialog.isShowing) {
+                    alertDialog.dismiss()
+                }
+                if(workInfo.state == WorkInfo.State.SUCCEEDED) {
+                    navController.navigate(R.id.action_todoFragment_to_loginFragment)
+                } else {
+                    snackbar.setText(getString(R.string.unable_to_sign_out))
+                    snackbar.show()
+                }
+            }
+        }
+
         todoViewModel.allTodosLiveData().observe(viewLifecycleOwner) { todos ->
             if (todos.isNullOrEmpty()) {
                 binding.emptyListText.visibility = VISIBLE
@@ -60,7 +84,7 @@ class TodoFragment : BaseFragment<FragmentTodoBinding>(FragmentTodoBinding::infl
         }
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            if (todoViewModel.networkConnected) {
+            if (networkConnected) {
                 todoViewModel.fetchTodos(userId)
             } else {
                 binding.swipeRefreshLayout.isRefreshing = false
@@ -72,7 +96,7 @@ class TodoFragment : BaseFragment<FragmentTodoBinding>(FragmentTodoBinding::infl
         }
 
         networkConnection.observe(viewLifecycleOwner) { isConnected ->
-            todoViewModel.networkConnected = isConnected
+            networkConnected = isConnected
         }
 
         todoViewModel.errorMessage.observe(viewLifecycleOwner) { errorMessage ->
@@ -143,42 +167,10 @@ class TodoFragment : BaseFragment<FragmentTodoBinding>(FragmentTodoBinding::infl
 
     private fun signOut() {
         alertDialog.setTitle(getString(R.string.sign_out_confirmation))
-        alertDialog.setButton(BUTTON_POSITIVE,getString(R.string.yes)) { dialog, _ ->
-            lifecycleScope.launch(IO) {
-                    if (todoViewModel.deleteUser(userId)) {
-
-                        lifecycleScope.launch(Main) {
-                            val constraints = Constraints.Builder().build()
-
-                            val data = Data.Builder()
-                            data.putLong(USERID, userId)
-
-                            val task = OneTimeWorkRequest.Builder(RemoveUserFilesWorker::class.java)
-                                .setInputData(data.build())
-                                .setConstraints(constraints)
-                                .build()
-
-                            workManager.getWorkInfoByIdLiveData(task.id).observe(this@TodoFragment) { workInfo ->
-
-                                if (workInfo.state.isFinished){
-                                    dialog.dismiss()
-                                    if(workInfo.state == WorkInfo.State.SUCCEEDED) {
-                                        navController.navigate(R.id.action_todoFragment_to_loginFragment)
-                                    } else {
-                                        snackbar.setText(getString(R.string.unable_to_sign_out))
-                                        snackbar.show()
-                                    }
-                                }
-
-                            }
-                            workManager.enqueue(task)
-                        }
-
-                    }
-
-                }
+        alertDialog.setButton(BUTTON_POSITIVE, getString(R.string.yes)) { _, _ ->
+            workManager.enqueue(userSignOutRequest)
         }
-        alertDialog.setButton(BUTTON_NEGATIVE,getString(R.string.no)) { dialog, _ ->
+        alertDialog.setButton(BUTTON_NEGATIVE, getString(R.string.no)) { dialog, _ ->
             dialog.dismiss()
         }
         alertDialog.show()

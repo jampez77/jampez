@@ -11,6 +11,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.jampez.utils.constants.userImage
 import com.example.jampez.utils.extensions.decryptFile
+import com.example.jampez.utils.extensions.deleteTmpFiles
 import com.example.jampez.utils.extensions.encryptFile
 import okhttp3.internal.format
 import org.koin.core.component.KoinComponent
@@ -29,7 +30,7 @@ class BindingAdapters {
         fun loadImage(view: ImageView?, imageUrl: String, userId: Long) {
             view?.let {
                 val fileName = format(userImage, userId)
-                val file = File(view.context.filesDir, fileName)
+                val file = File(view.context.cacheDir, fileName)
                 val glide = Koin.glide
                 if (file.exists()) {
                     glide.load(file.decryptFile(view.context, fileName)).into(view)

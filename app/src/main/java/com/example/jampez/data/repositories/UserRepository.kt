@@ -13,6 +13,7 @@ import com.example.jampez.utils.constants.IMAGE
 import com.example.jampez.utils.constants.PASSPHRASE
 import com.example.jampez.utils.constants.PASSWORD
 import org.koin.java.KoinJavaComponent.inject
+import java.util.UUID
 
 class UserRepository(private val dummyJsonApi: DummyJsonApi) : IUserRepository {
 
@@ -20,15 +21,31 @@ class UserRepository(private val dummyJsonApi: DummyJsonApi) : IUserRepository {
         SharedPreferences::class.java
     )
 
-    override suspend fun fetchUsers(): ApiResponse<FetchUsers> = ApiResponse(dummyJsonApi.fetchUsers())
+    override suspend fun fetchUsers(emailInput: String, passwordInput: String): Long? {
+        val response = ApiResponse(dummyJsonApi.fetchUsers())
 
-    override fun saveDatabasePassPhrase(passPhrase: String?) : Boolean {
+        return if(response.success) {
+            val users = response.body?.users
+
+            val user = users?.find { it.email == emailInput && it.password == passwordInput }
+
+            if (saveDatabasePassPhrase() && saveUser(user)) {
+                user?.id
+            } else {
+                null
+            }
+        } else {
+            null
+        }
+    }
+
+    override fun saveDatabasePassPhrase() : Boolean {
         var passPhrasedSaved: Boolean
         prefs.run {
             passPhrasedSaved = contains(PASSPHRASE)
             if (!passPhrasedSaved) {
                 edit {
-                    putString(PASSPHRASE, passPhrase)
+                    putString(PASSPHRASE, UUID.randomUUID().toString())
                     passPhrasedSaved = true
                 }
             }

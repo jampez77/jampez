@@ -3,7 +3,6 @@ package com.example.jampez.features.login
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
 import com.example.jampez.MainActivity
@@ -14,7 +13,6 @@ import com.example.jampez.utils.ConnectionLiveData
 import com.example.jampez.utils.constants.USER_ID
 import com.example.jampez.utils.extensions.isEmailValid
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -53,7 +51,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
             }
         }
 
-        loginViewModel.userIdState.observe(viewLifecycleOwner) { userId ->
+        loginViewModel.userId.observe(viewLifecycleOwner) { userId ->
             if (userId != null) {
                 val mainActivity = (activity as MainActivity)
                 mainActivity.stopLoadingAnimation()
@@ -98,20 +96,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
             val mainActivity = (activity as MainActivity)
             mainActivity.startLoadingAnimation()
             mainActivity.showLoadingTransition {
-                if (loginViewModel.networkConnected) {
-                    lifecycleScope.launch {
-                        loginViewModel.fetchUser(email, password)
-                    }
-                } else {
-                    val user = loginViewModel.getUser()
-                    val userId = if (user != null && TextUtils.equals(user.email, email) && TextUtils.equals(user.password, password)) {
-                        user.id
-                    } else {
-                        null
-                    }
-                    loginViewModel.setSignedInState(userId)
-                }
-
+                loginViewModel.fetchUser(email, password)
             }
         }
     }

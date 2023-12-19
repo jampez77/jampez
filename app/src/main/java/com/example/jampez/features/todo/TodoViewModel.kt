@@ -12,10 +12,12 @@ import com.example.jampez.data.repositories.TodoRepository
 import com.example.jampez.data.repositories.UserRepository
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import org.koin.java.KoinJavaComponent.inject
 
-class TodoViewModel(private val userRepository: UserRepository, private val todoRepository: TodoRepository) : ViewModel() {
+class TodoViewModel : ViewModel() {
 
-    var networkConnected: Boolean = false
+    private val userRepository: UserRepository by inject(UserRepository::class.java)
+    private val todoRepository: TodoRepository by inject(TodoRepository::class.java)
 
     private val todosResourceFactory = ResourceFactory<FetchTodos>()
 
@@ -29,11 +31,6 @@ class TodoViewModel(private val userRepository: UserRepository, private val todo
     val errorMessage: LiveData<String> = _errorMessage
 
     fun signOut() = _signOutButtonState.postValue(true)
-
-    fun deleteUser(userId: Long) : Boolean {
-        todoRepository.deleteTodos(userId)
-        return userRepository.deleteUser()
-    }
 
     fun getUser() = userRepository.getUser()
 

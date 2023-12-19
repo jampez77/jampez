@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.jampez.databinding.ActivityMainBinding
 import com.example.jampez.utils.constants.USER_ID
+import com.example.jampez.utils.extensions.deleteTmpFiles
 import com.example.jampez.utils.extensions.isRooted
 import com.example.jampez.utils.extensions.startLoadingAnimation
 import com.example.jampez.utils.extensions.stopLoadingAnimation
@@ -36,6 +37,8 @@ class MainActivity : AppCompatActivity() {
         navController = navHostFragment.navController
 
         if (user != null && navController.currentDestination?.id == R.id.loginFragment) {
+            user.id.deleteTmpFiles(this)
+
             val bundle = Bundle()
             bundle.putLong(USER_ID, user.id)
             navController.navigate(R.id.action_loginFragment_to_todoFragment, bundle)

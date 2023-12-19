@@ -5,15 +5,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.jampez.data.models.User
 import com.example.jampez.data.repositories.UserRepository
+import com.example.jampez.utils.extensions.isEquals
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import org.koin.java.KoinJavaComponent.inject
 
-class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
+class LoginViewModel : ViewModel() {
 
+    private val userRepository: UserRepository by inject(UserRepository::class.java)
     var networkConnected: Boolean = false
-
     private val _emailErrorState = MutableLiveData<Boolean>()
     val emailErrorState: LiveData<Boolean> = _emailErrorState
 
@@ -27,60 +28,32 @@ class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
     fun setPasswordErrorState(showError: Boolean) {
         _passwordErrorState.postValue(showError)
     }
-
     private val _signInButtonState = MutableLiveData<Boolean>()
     val signInButtonState: LiveData<Boolean> = _signInButtonState
 
     fun setSignInButtonState(isPressed: Boolean) {
         _signInButtonState.postValue(isPressed)
     }
-
     fun signIn() {
         _signInButtonState.postValue(true)
     }
-
-    private val _userIdState = MutableLiveData<Long?>()
-    val userIdState: LiveData<Long?> = _userIdState
-
-    fun setSignedInState(signedIn: Long?) {
-        _userIdState.postValue(signedIn)
-    }
-
-    private fun saveUser(user: User?) : Boolean {
-        return userRepository.saveUser(user)
-    }
-
-    private fun saveDatabasePassPhrase(passPhrase: String?) : Boolean {
-        return userRepository.saveDatabasePassPhrase(passPhrase)
-    }
-
-    fun getUser() : User? {
-        return userRepository.getUser()
-    }
+    private val _userId = MutableLiveData<Long?>()
+    val userId: LiveData<Long?> = _userId
 
     fun fetchUser(emailInput: String, passwordInput: String) {
-
-        viewModelScope.launch(IO) {
-            val usersResponse = userRepository.fetchUsers()
-
-            usersResponse.let { response ->
-
-                if(response.success) {
-                    val users = response.body?.users
-
-                    val user = users?.find { it.email == emailInput && it.password == passwordInput }
-
-                    val userId = if (saveDatabasePassPhrase(user?.password) && saveUser(user)) {
-                        user?.id
-                    } else {
-                        null
-                    }
-                    _userIdState.postValue(userId)
-                } else {
-                    _userIdState.postValue(null)
-                }
+        if (networkConnected) {
+            viewModelScope.launch(IO) {
+                val userId = userRepository.fetchUsers(emailInput, passwordInput)
+                _userId.postValue(userId)
             }
+        } else {
+            val user = userRepository.getUser()
+            val userId = if (user != null && user.email.isEquals(emailInput) && user.password.isEquals(passwordInput)) {
+                user.id
+            } else {
+                null
+            }
+            _userId.postValue(userId)
         }
     }
-
 }
