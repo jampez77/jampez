@@ -8,6 +8,7 @@ import com.example.jampez.data.api.responses.FetchTodos
 import com.example.jampez.data.api.wrappers.ResourceFactory
 import com.example.jampez.data.api.wrappers.Status
 import com.example.jampez.data.entities.ToDo
+import com.example.jampez.data.repositories.ConnectionRepository
 import com.example.jampez.data.repositories.TodoRepository
 import com.example.jampez.data.repositories.UserRepository
 import kotlinx.coroutines.Dispatchers.IO
@@ -18,6 +19,7 @@ class TodoViewModel : ViewModel() {
 
     private val userRepository: UserRepository by inject(UserRepository::class.java)
     private val todoRepository: TodoRepository by inject(TodoRepository::class.java)
+    private val connectionRepository: ConnectionRepository by inject(ConnectionRepository::class.java)
 
     private val todosResourceFactory = ResourceFactory<FetchTodos>()
 
@@ -43,6 +45,8 @@ class TodoViewModel : ViewModel() {
             allTodos = todoRepository.getAllTodos()
         }
     }
+
+    fun isNetworkConnected() = connectionRepository.isNetworkConnected()
 
     fun updateTodo(toDo: ToDo) {
         viewModelScope.launch(IO) {

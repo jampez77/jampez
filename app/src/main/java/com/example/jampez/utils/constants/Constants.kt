@@ -1,7 +1,8 @@
 package com.example.jampez.utils.constants
 
 const val ID = "id"
-const val FIRST_NAME  = "firstName"
+const val FIRST_NAME = "firstName"
+const val NETWORK_CONNECTED = "network_connected"
 const val EMAIL = "email"
 const val PASSWORD = "password"
 const val PASSPHRASE = "passphrase"

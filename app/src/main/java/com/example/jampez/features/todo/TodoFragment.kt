@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import androidx.appcompat.app.AlertDialog
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.fragment.navArgs
@@ -19,11 +18,11 @@ import com.example.jampez.MainActivity
 import com.example.jampez.R
 import com.example.jampez.databinding.FragmentTodoBinding
 import com.example.jampez.features.base.BaseFragment
-import com.example.jampez.utils.ConnectionLiveData
 import com.example.jampez.utils.worker.SignOutUserWorker
 import com.example.jampez.utils.constants.USERID
 import com.example.jampez.utils.extensions.startLoadingAnimation
 import com.example.jampez.utils.extensions.stopLoadingAnimation
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -35,10 +34,8 @@ class TodoFragment : BaseFragment<FragmentTodoBinding>(FragmentTodoBinding::infl
     private lateinit var navController: NavController
     private var userId: Long = -1
     private val args by navArgs<TodoFragmentArgs>()
-    private val networkConnection: ConnectionLiveData by inject()
-    private var networkConnected: Boolean = false
     private val workManager: WorkManager by inject()
-    private val snackbar: Snackbar by inject { parametersOf(requireActivity()) }
+    private val snackbar: Snackbar by inject { parametersOf(requireView()) }
 
     private val userSignOutRequestBuilder: OneTimeWorkRequest.Builder by inject<OneTimeWorkRequest.Builder> {
         parametersOf(
@@ -52,16 +49,11 @@ class TodoFragment : BaseFragment<FragmentTodoBinding>(FragmentTodoBinding::infl
 
     private val todoAdapter = TodoAdapter()
 
-    private val alertDialog: AlertDialog by inject { parametersOf(requireActivity(), R.style.WrapContentDialogWithUpDownAnimations) }
-
     private val observers by lazy {
 
         workManager.getWorkInfoByIdLiveData(userSignOutRequest.id).observe(this@TodoFragment) { workInfo ->
 
             if (workInfo.state.isFinished) {
-                if (alertDialog.isShowing) {
-                    alertDialog.dismiss()
-                }
                 if(workInfo.state == WorkInfo.State.SUCCEEDED) {
                     navController.navigate(R.id.action_todoFragment_to_loginFragment)
                 } else {
@@ -84,7 +76,7 @@ class TodoFragment : BaseFragment<FragmentTodoBinding>(FragmentTodoBinding::infl
         }
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            if (networkConnected) {
+            if (todoViewModel.isNetworkConnected()) {
                 todoViewModel.fetchTodos(userId)
             } else {
                 binding.swipeRefreshLayout.isRefreshing = false
@@ -93,10 +85,6 @@ class TodoFragment : BaseFragment<FragmentTodoBinding>(FragmentTodoBinding::infl
                 snackbar.show()
             }
 
-        }
-
-        networkConnection.observe(viewLifecycleOwner) { isConnected ->
-            networkConnected = isConnected
         }
 
         todoViewModel.errorMessage.observe(viewLifecycleOwner) { errorMessage ->
@@ -166,9 +154,12 @@ class TodoFragment : BaseFragment<FragmentTodoBinding>(FragmentTodoBinding::infl
     }
 
     private fun signOut() {
+        val alertDialog = MaterialAlertDialogBuilder(requireContext(), R.style.WrapContentDialogWithUpDownAnimations)
+            .create()
         alertDialog.setTitle(getString(R.string.sign_out_confirmation))
-        alertDialog.setButton(BUTTON_POSITIVE, getString(R.string.yes)) { _, _ ->
+        alertDialog.setButton(BUTTON_POSITIVE, getString(R.string.yes)) { dialog, _ ->
             workManager.enqueue(userSignOutRequest)
+            dialog.dismiss()
         }
         alertDialog.setButton(BUTTON_NEGATIVE, getString(R.string.no)) { dialog, _ ->
             dialog.dismiss()

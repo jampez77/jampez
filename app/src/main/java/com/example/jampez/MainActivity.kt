@@ -3,21 +3,27 @@ package com.example.jampez
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
 import com.example.jampez.databinding.ActivityMainBinding
-import com.example.jampez.utils.constants.USER_ID
-import com.example.jampez.utils.extensions.deleteTmpFiles
+import com.example.jampez.utils.ConnectionLiveData
 import com.example.jampez.utils.extensions.isRooted
 import com.example.jampez.utils.extensions.startLoadingAnimation
 import com.example.jampez.utils.extensions.stopLoadingAnimation
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModel()
-    private lateinit var navController: NavController
+    private val networkConnection: ConnectionLiveData by inject { parametersOf(this) }
+
+    private val observers by lazy {
+        networkConnection.observe(this) { isConnected ->
+            viewModel.setNetworkConnection(isConnected)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -27,24 +33,10 @@ class MainActivity : AppCompatActivity() {
         if (isRooted()) {
             finish()
         }
-
+        postponeEnterTransition()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val user = viewModel.getUser()
-
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        navController = navHostFragment.navController
-
-        if (user != null && navController.currentDestination?.id == R.id.loginFragment) {
-            user.id.deleteTmpFiles(this)
-
-            val bundle = Bundle()
-            bundle.putLong(USER_ID, user.id)
-            navController.navigate(R.id.action_loginFragment_to_todoFragment, bundle)
-        } else {
-            postponeEnterTransition()
-        }
+        observers
     }
 
     fun startLoadingAnimation() {

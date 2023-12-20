@@ -3,13 +3,11 @@ package com.example.jampez.features.login
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
-import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
 import com.example.jampez.MainActivity
 import com.example.jampez.R
 import com.example.jampez.databinding.FragmentLoginBinding
 import com.example.jampez.features.base.BaseFragment
-import com.example.jampez.utils.ConnectionLiveData
 import com.example.jampez.utils.constants.USER_ID
 import com.example.jampez.utils.extensions.isEmailValid
 import com.google.android.material.snackbar.Snackbar
@@ -20,14 +18,9 @@ import org.koin.core.parameter.parametersOf
 class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::inflate) {
 
     private val loginViewModel: LoginViewModel by viewModel()
-    private lateinit var navController: NavController
-    private val networkConnection: ConnectionLiveData by inject()
-    private val snackbar: Snackbar by inject { parametersOf(requireActivity()) }
+    private val snackbar: Snackbar by inject { parametersOf(requireView()) }
 
     private val observers by lazy {
-        networkConnection.observe(viewLifecycleOwner) { isConnected ->
-            loginViewModel.networkConnected = isConnected
-        }
 
         loginViewModel.emailErrorState.observe(viewLifecycleOwner) { showError ->
             binding.emailLayout.error = if (showError) {
@@ -52,20 +45,16 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
         }
 
         loginViewModel.userId.observe(viewLifecycleOwner) { userId ->
+            val mainActivity = (requireActivity() as MainActivity)
             if (userId != null) {
-                val mainActivity = (activity as MainActivity)
                 mainActivity.stopLoadingAnimation()
-                val bundle = Bundle()
-                bundle.putLong(USER_ID, userId)
-                navController.navigate(R.id.action_loginFragment_to_todoFragment, bundle)
+                navigateToDoIfFound(userId)
             } else {
                 loginViewModel.setSignInButtonState(false)
-
-                val mainActivity = (activity as MainActivity)
                 mainActivity.hideLoadingTransition()
 
                 snackbar.setText(
-                    if (loginViewModel.networkConnected) {
+                    if (loginViewModel.isNetworkConnected()) {
                         getString(R.string.user_not_found)
                     } else {
                         getString(R.string.no_network_connection)
@@ -77,14 +66,24 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        navController = findNavController(requireActivity(), R.id.nav_host_fragment)
-
-        binding.apply {
-            viewModel = loginViewModel
+        val currentUserId = loginViewModel.getCurrentUserId()
+        if (currentUserId != null) {
+            navigateToDoIfFound(currentUserId)
+        } else {
+            super.onViewCreated(view, savedInstanceState)
+            binding.apply {
+                viewModel = loginViewModel
+            }
+            observers
         }
-        observers
+    }
+
+    private fun navigateToDoIfFound(userId: Long?) {
+        userId?.run {
+            val bundle = Bundle()
+            bundle.putLong(USER_ID, this)
+            findNavController(requireView()).navigate(R.id.action_loginFragment_to_todoFragment, bundle)
+        }
     }
 
     private fun signIn() {

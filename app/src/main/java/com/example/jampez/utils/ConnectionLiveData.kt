@@ -1,15 +1,15 @@
 package com.example.jampez.utils
 
-import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.*
 import android.net.NetworkCapabilities.*
 import androidx.lifecycle.LiveData
+import com.example.jampez.MainActivity
 
-class ConnectionLiveData(private val context: Context) : LiveData<Boolean>() {
+class ConnectionLiveData(activity: MainActivity) : LiveData<Boolean>() {
 
     private var connectivityManager: ConnectivityManager =
-        context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        activity.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
 
     private lateinit var connectivityManagerCallback: ConnectivityManager.NetworkCallback
 
@@ -33,14 +33,12 @@ class ConnectionLiveData(private val context: Context) : LiveData<Boolean>() {
 
     private fun updateConnection() {
         var result = false
-        val connectivityManager =
-            context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkCapabilities = connectivityManager.activeNetwork
-        if(networkCapabilities != null){
+        if (networkCapabilities != null) {
             val actNw =
                 connectivityManager.getNetworkCapabilities(networkCapabilities)
 
-            if(actNw != null){
+            if (actNw != null) {
                 result = when {
                     actNw.hasTransport(TRANSPORT_WIFI) -> true
                     actNw.hasTransport(TRANSPORT_CELLULAR) -> true
@@ -56,12 +54,14 @@ class ConnectionLiveData(private val context: Context) : LiveData<Boolean>() {
         connectivityManagerCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onCapabilitiesChanged(
                 network: Network,
-                networkCapabilities: NetworkCapabilities) {
+                networkCapabilities: NetworkCapabilities
+            ) {
 
                 networkCapabilities.let { capabilities ->
 
                     if (capabilities.hasCapability(NET_CAPABILITY_INTERNET) &&
-                        capabilities.hasCapability(NET_CAPABILITY_VALIDATED)) {
+                        capabilities.hasCapability(NET_CAPABILITY_VALIDATED)
+                    ) {
                         postValue(true)
                     }
                 }

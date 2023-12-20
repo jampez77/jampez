@@ -8,7 +8,6 @@ import com.example.jampez.data.repositories.UserRepository
 import io.mockk.every
 import io.mockk.mockkClass
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.test.KoinTest

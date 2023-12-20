@@ -3,6 +3,7 @@ package com.example.jampez.data.di
 import android.app.Activity
 import android.content.Context
 import androidx.appcompat.app.AlertDialog
+import com.example.jampez.MainActivity
 import com.example.jampez.R
 import com.example.jampez.utils.ConnectionLiveData
 import com.example.jampez.utils.constants.snackbarText
@@ -13,13 +14,13 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 val appModule = module {
-    single { provideNetworkConnectionListener(androidContext()) }
+    single<ConnectionLiveData> { activity -> provideNetworkConnectionListener(activity.get()) }
     single { provideMaterialAlertDialogBuilder(androidContext(), get()) }
-    single<AlertDialog>{ activityContext -> provideAlertDialog(activityContext.get(), get()) }
+    single<AlertDialog>{ context -> provideAlertDialog(context.get(), get()) }
     single<Snackbar> { view -> provideSnackbar(view.get()) }
 }
 
-fun provideNetworkConnectionListener(context: Context) = ConnectionLiveData(context)
+fun provideNetworkConnectionListener(activity: MainActivity) = ConnectionLiveData(activity)
 
 fun provideMaterialAlertDialogBuilder(context: Context, style: Int) = MaterialAlertDialogBuilder(context, style)
 
