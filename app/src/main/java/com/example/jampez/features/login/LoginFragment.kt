@@ -3,6 +3,7 @@ package com.example.jampez.features.login
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation.findNavController
 import com.example.jampez.MainActivity
 import com.example.jampez.R
@@ -11,6 +12,8 @@ import com.example.jampez.features.base.BaseFragment
 import com.example.jampez.utils.constants.USER_ID
 import com.example.jampez.utils.extensions.isEmailValid
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -18,7 +21,7 @@ import org.koin.core.parameter.parametersOf
 class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::inflate) {
 
     private val loginViewModel: LoginViewModel by viewModel()
-    private val snackbar: Snackbar by inject { parametersOf(requireView()) }
+    private val snackbar: Snackbar by inject { parametersOf(requireActivity()) }
 
     private val observers by lazy {
 
@@ -95,7 +98,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
             val mainActivity = (activity as MainActivity)
             mainActivity.startLoadingAnimation()
             mainActivity.showLoadingTransition {
-                loginViewModel.fetchUser(email, password)
+                lifecycleScope.launch(IO) {
+                    loginViewModel.authenticateUser(email, password)
+                }
             }
         }
     }

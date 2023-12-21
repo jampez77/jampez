@@ -16,7 +16,7 @@ import org.koin.dsl.module
 val appModule = module {
     single<ConnectionLiveData> { activity -> provideNetworkConnectionListener(activity.get()) }
     single { provideMaterialAlertDialogBuilder(androidContext(), get()) }
-    single<AlertDialog>{ context -> provideAlertDialog(context.get(), get()) }
+    single<AlertDialog>{ activity -> provideAlertDialog(activity.get(), get()) }
     single<Snackbar> { view -> provideSnackbar(view.get()) }
 }
 

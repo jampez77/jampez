@@ -1,21 +1,17 @@
 package com.example.jampez.features.login
 
-
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.jampez.data.repositories.ConnectionRepository
-import com.example.jampez.data.repositories.UserRepository
+import com.example.jampez.data.interfaces.IConnectionRepository
+import com.example.jampez.data.interfaces.IUserRepository
 import com.example.jampez.utils.extensions.isEquals
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.inject
 
 class LoginViewModel : ViewModel() {
 
-    private val userRepository: UserRepository by inject(UserRepository::class.java)
-    private val connectionRepository: ConnectionRepository by inject(ConnectionRepository::class.java)
+    private val userRepository: IUserRepository by inject(IUserRepository::class.java)
+    private val connectionRepository: IConnectionRepository by inject(IConnectionRepository::class.java)
     private val _emailErrorState = MutableLiveData<Boolean>()
     val emailErrorState: LiveData<Boolean> = _emailErrorState
 
@@ -47,12 +43,10 @@ class LoginViewModel : ViewModel() {
         return userRepository.getUser()?.id
     }
 
-    fun fetchUser(emailInput: String, passwordInput: String) {
+    fun authenticateUser(emailInput: String, passwordInput: String) {
         if (isNetworkConnected()) {
-            viewModelScope.launch(IO) {
-                val userId = userRepository.fetchUsers(emailInput, passwordInput)
-                _userId.postValue(userId)
-            }
+            val userId = userRepository.authenticatedUserId(emailInput, passwordInput)
+            _userId.postValue(userId)
         } else {
             val user = userRepository.getUser()
             val userId = if (user != null && user.email.isEquals(emailInput) && user.password.isEquals(passwordInput)) {

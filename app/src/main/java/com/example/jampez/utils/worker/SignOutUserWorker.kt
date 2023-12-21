@@ -3,8 +3,8 @@ package com.example.jampez.utils.worker
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.jampez.data.repositories.TodoRepository
-import com.example.jampez.data.repositories.UserRepository
+import com.example.jampez.data.interfaces.ITodoRepository
+import com.example.jampez.data.interfaces.IUserRepository
 import com.example.jampez.utils.constants.USERID
 import com.example.jampez.utils.constants.userImage
 import okhttp3.internal.format
@@ -17,8 +17,8 @@ class SignOutUserWorker(
     params: WorkerParameters
 ) : CoroutineWorker(appContext, params), KoinComponent {
 
-    private val userRepository: UserRepository by inject()
-    private val todoRepository: TodoRepository by inject()
+    private val userRepository: IUserRepository by inject()
+    private val todoRepository: ITodoRepository by inject()
 
     override suspend fun doWork(): Result {
 

@@ -8,18 +8,18 @@ import com.example.jampez.data.api.responses.FetchTodos
 import com.example.jampez.data.api.wrappers.ResourceFactory
 import com.example.jampez.data.api.wrappers.Status
 import com.example.jampez.data.entities.ToDo
-import com.example.jampez.data.repositories.ConnectionRepository
-import com.example.jampez.data.repositories.TodoRepository
-import com.example.jampez.data.repositories.UserRepository
+import com.example.jampez.data.interfaces.IConnectionRepository
+import com.example.jampez.data.interfaces.ITodoRepository
+import com.example.jampez.data.interfaces.IUserRepository
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.inject
 
 class TodoViewModel : ViewModel() {
 
-    private val userRepository: UserRepository by inject(UserRepository::class.java)
-    private val todoRepository: TodoRepository by inject(TodoRepository::class.java)
-    private val connectionRepository: ConnectionRepository by inject(ConnectionRepository::class.java)
+    private val userRepository: IUserRepository by inject(IUserRepository::class.java)
+    private val todoRepository: ITodoRepository by inject(ITodoRepository::class.java)
+    private val connectionRepository: IConnectionRepository by inject(IConnectionRepository::class.java)
 
     private val todosResourceFactory = ResourceFactory<FetchTodos>()
 
@@ -42,10 +42,13 @@ class TodoViewModel : ViewModel() {
 
     init {
         viewModelScope.launch(IO) {
-            allTodos = todoRepository.getAllTodos()
+            initTodos()
         }
     }
 
+    fun initTodos() {
+        allTodos = todoRepository.getAllTodos()
+    }
     fun isNetworkConnected() = connectionRepository.isNetworkConnected()
 
     fun updateTodo(toDo: ToDo) {
@@ -55,8 +58,8 @@ class TodoViewModel : ViewModel() {
     }
 
     fun fetchTodos(userId: Long) {
+        _loading.postValue(true)
         viewModelScope.launch(IO) {
-            _loading.postValue(true)
             val usersResponse = todosResourceFactory.getResource(todoRepository.fetchTodos())
 
             when(usersResponse.status) {

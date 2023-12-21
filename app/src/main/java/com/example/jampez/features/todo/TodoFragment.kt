@@ -35,7 +35,7 @@ class TodoFragment : BaseFragment<FragmentTodoBinding>(FragmentTodoBinding::infl
     private var userId: Long = -1
     private val args by navArgs<TodoFragmentArgs>()
     private val workManager: WorkManager by inject()
-    private val snackbar: Snackbar by inject { parametersOf(requireView()) }
+    private val snackbar: Snackbar by inject { parametersOf(requireActivity()) }
 
     private val userSignOutRequestBuilder: OneTimeWorkRequest.Builder by inject<OneTimeWorkRequest.Builder> {
         parametersOf(

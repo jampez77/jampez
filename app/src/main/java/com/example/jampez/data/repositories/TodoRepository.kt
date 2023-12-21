@@ -5,8 +5,10 @@ import com.example.jampez.data.api.DummyJsonApi
 import com.example.jampez.data.api.responses.FetchTodos
 import com.example.jampez.data.dao.ToDoDao
 import com.example.jampez.data.entities.ToDo
+import com.example.jampez.data.interfaces.ITodoRepository
 
-class TodoRepository(private val dummyJsonApi: DummyJsonApi, private val toDoDao: ToDoDao) : ITodoRepository {
+class TodoRepository(private val dummyJsonApi: DummyJsonApi, private val toDoDao: ToDoDao) :
+    ITodoRepository {
 
     override suspend fun fetchTodos(): ApiResponse<FetchTodos> = ApiResponse(dummyJsonApi.fetchTodos())
 

@@ -4,8 +4,8 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.example.jampez.data.api.wrappers.ApiResponse
 import com.example.jampez.data.api.DummyJsonApi
-import com.example.jampez.data.api.responses.FetchUsers
 import com.example.jampez.data.models.User
+import com.example.jampez.data.interfaces.IUserRepository
 import com.example.jampez.utils.constants.EMAIL
 import com.example.jampez.utils.constants.FIRST_NAME
 import com.example.jampez.utils.constants.ID
@@ -21,7 +21,7 @@ class UserRepository(private val dummyJsonApi: DummyJsonApi) : IUserRepository {
         SharedPreferences::class.java
     )
 
-    override suspend fun fetchUsers(emailInput: String, passwordInput: String): Long? {
+    override fun authenticatedUserId(emailInput: String, passwordInput: String): Long? {
         val response = ApiResponse(dummyJsonApi.fetchUsers())
 
         return if(response.success) {
