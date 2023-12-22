@@ -16,7 +16,7 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "com.example.jampez.InstrumentationTestRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -26,6 +26,12 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
+        }
+    }
+    packagingOptions {
+        resources {
+            resources.excludes.add("META-INF/LICENSE.md")
+            resources.excludes.add("META-INF/LICENSE-notice.md")
         }
     }
     compileOptions {
@@ -83,9 +89,14 @@ dependencies {
     testImplementation "io.insert-koin:koin-test:3.5.0"
     testImplementation "io.insert-koin:koin-test-junit4:3.5.0"
     testImplementation "io.mockk:mockk:1.13.8"
+    androidTestImplementation "io.mockk:mockk-android:1.13.8"
+    androidTestImplementation "io.insert-koin:koin-test:3.5.0"
+    androidTestImplementation "io.insert-koin:koin-test-junit4:3.5.0"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
     testImplementation "androidx.arch.core:core-testing:2.2.0"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3"
     testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
+    debugImplementation 'androidx.fragment:fragment-testing:1.6.2'
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.11.0'

@@ -2,7 +2,16 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="BaseFragmentTest">
+        <State />
+      </entry>
+      <entry key="LoginFragmentTest">
+        <State />
+      </entry>
       <entry key="app">
+        <State />
+      </entry>
+      <entry key="testEventFragment()">
         <State />
       </entry>
     </value>
