@@ -55,7 +55,7 @@ class UserRepository(private val dummyJsonApi: DummyJsonApi) : IUserRepository {
 
     override fun saveUser(user: User?) : Boolean {
         var userSaved = false
-        prefs.edit{
+        prefs.edit {
             if (user != null) {
                 putLong(ID, user.id)
                 putString(FIRST_NAME, user.firstName)

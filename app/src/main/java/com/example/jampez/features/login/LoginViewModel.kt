@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.jampez.data.interfaces.IConnectionRepository
 import com.example.jampez.data.interfaces.IUserRepository
+import com.example.jampez.utils.Event
 import com.example.jampez.utils.extensions.isEquals
 import org.koin.java.KoinJavaComponent.inject
 
@@ -25,15 +26,13 @@ class LoginViewModel : ViewModel() {
     fun setPasswordErrorState(showError: Boolean) {
         _passwordErrorState.postValue(showError)
     }
-    private val _signInButtonState = MutableLiveData<Boolean>()
-    val signInButtonState: LiveData<Boolean> = _signInButtonState
+    private val _signInButtonState = MutableLiveData<Event<Unit>>()
+    val signInButtonState: LiveData<Event<Unit>> = _signInButtonState
 
-    fun setSignInButtonState(isPressed: Boolean) {
-        _signInButtonState.postValue(isPressed)
-    }
     fun signIn() {
-        _signInButtonState.postValue(true)
+        _signInButtonState.postValue(Event(Unit))
     }
+
     private val _userId = MutableLiveData<Long?>()
     val userId: LiveData<Long?> = _userId
 

@@ -11,6 +11,7 @@ import com.example.jampez.data.entities.ToDo
 import com.example.jampez.data.interfaces.IConnectionRepository
 import com.example.jampez.data.interfaces.ITodoRepository
 import com.example.jampez.data.interfaces.IUserRepository
+import com.example.jampez.utils.Event
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.inject
@@ -23,8 +24,8 @@ class TodoViewModel : ViewModel() {
 
     private val todosResourceFactory = ResourceFactory<FetchTodos>()
 
-    private val _signOutButtonState = MutableLiveData<Boolean>()
-    val signOutButtonState: LiveData<Boolean> = _signOutButtonState
+    private val _signOutButtonState = MutableLiveData<Event<Unit>>()
+    val signOutButtonState: LiveData<Event<Unit>> = _signOutButtonState
 
     private val _loading = MutableLiveData<Boolean>()
     val loading: LiveData<Boolean> = _loading
@@ -32,7 +33,7 @@ class TodoViewModel : ViewModel() {
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
 
-    fun signOut() = _signOutButtonState.postValue(true)
+    fun signOut() = _signOutButtonState.postValue(Event(Unit))
 
     fun getUser() = userRepository.getUser()
 

@@ -101,8 +101,8 @@ class TodoFragment : BaseFragment<FragmentTodoBinding>(FragmentTodoBinding::infl
             }
         }
 
-        todoViewModel.signOutButtonState.observe(viewLifecycleOwner) { isPressed ->
-            if (isPressed) {
+        todoViewModel.signOutButtonState.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.run {
                 signOut()
             }
         }

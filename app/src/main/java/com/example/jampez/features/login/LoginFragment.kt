@@ -41,8 +41,8 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
             }
         }
 
-        loginViewModel.signInButtonState.observe(viewLifecycleOwner) { isPressed ->
-            if (isPressed) {
+        loginViewModel.signInButtonState.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.run {
                 signIn()
             }
         }
@@ -53,7 +53,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(FragmentLoginBinding::i
                 mainActivity.stopLoadingAnimation()
                 navigateToDoIfFound(userId)
             } else {
-                loginViewModel.setSignInButtonState(false)
                 mainActivity.hideLoadingTransition()
 
                 snackbar.setText(

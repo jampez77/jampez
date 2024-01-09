@@ -11,13 +11,13 @@ import org.junit.Rule
 import org.junit.Test
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
-import org.koin.test.KoinTest
+import org.koin.test.AutoCloseKoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.get
 import org.koin.test.inject
 import org.koin.test.mock.MockProviderRule
 
-class MainViewModelTest : KoinTest {
+class MainViewModelTest : AutoCloseKoinTest() {
 
     private val mainViewModel by inject<MainViewModel>()
     private val application: TestApplication = mockk()

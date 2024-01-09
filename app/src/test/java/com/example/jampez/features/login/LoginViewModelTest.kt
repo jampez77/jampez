@@ -7,6 +7,7 @@ import com.example.jampez.data.di.viewModelModule
 import com.example.jampez.data.models.User
 import com.example.jampez.data.interfaces.IConnectionRepository
 import com.example.jampez.data.interfaces.IUserRepository
+import com.example.jampez.utils.Event
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -17,12 +18,13 @@ import org.junit.Test
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.component.get
 import org.koin.dsl.module
-import org.koin.test.KoinTest
+import org.koin.test.AutoCloseKoinTest
 import org.koin.test.KoinTestRule.Companion.create
 import org.koin.test.inject
 import org.koin.test.mock.MockProviderRule
+import kotlin.test.assertNotEquals
 
-class LoginViewModelTest : KoinTest {
+class LoginViewModelTest : AutoCloseKoinTest() {
 
     private val loginViewModel by inject<LoginViewModel>()
     private val mockUser = User(1, "firstName", "email", "passwords", "image")
@@ -72,23 +74,15 @@ class LoginViewModelTest : KoinTest {
     }
 
     @Test
-    fun `test setSignInButtonState`() {
-        val mockObserver: Observer<Boolean> = mockk(relaxed = true)
+    fun `test signIn`() {
+        val mockObserver: Observer<Event<Unit>> = mockk(relaxed = true)
         loginViewModel.signInButtonState.observeForever(mockObserver)
 
-        loginViewModel.setSignInButtonState(true)
-
-        assertEquals(true, loginViewModel.signInButtonState.value)
-    }
-
-    @Test
-    fun `test signIn`() {
-        val mockObserver: Observer<Long?> = mockk(relaxed = true)
-        loginViewModel.userId.observeForever(mockObserver)
+        assertEquals(null, loginViewModel.signInButtonState.value)
 
         loginViewModel.signIn()
 
-        assertEquals(true, loginViewModel.signInButtonState.value)
+        assertNotEquals(null, loginViewModel.signInButtonState.value)
     }
 
     @Test

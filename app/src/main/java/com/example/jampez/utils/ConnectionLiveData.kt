@@ -1,32 +1,32 @@
 package com.example.jampez.utils
 
+import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.*
 import android.net.NetworkCapabilities.*
 import androidx.lifecycle.LiveData
-import com.example.jampez.MainActivity
 
-class ConnectionLiveData(activity: MainActivity) : LiveData<Boolean>() {
+class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
 
     private var connectivityManager: ConnectivityManager =
-        activity.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
 
     private lateinit var connectivityManagerCallback: ConnectivityManager.NetworkCallback
 
-    private val networkRequestBuilder: NetworkRequest.Builder = NetworkRequest.Builder()
+    private val networkRequestBuilder: NetworkRequest = NetworkRequest.Builder()
         .addTransportType(TRANSPORT_CELLULAR)
-        .addTransportType(TRANSPORT_WIFI)
+        .addTransportType(TRANSPORT_WIFI).build()
 
-    override fun onActive() {
+    public override fun onActive() {
         super.onActive()
         updateConnection()
         connectivityManager.registerNetworkCallback(
-            networkRequestBuilder.build(),
+            networkRequestBuilder,
             getConnectivityMarshmallowManagerCallback()
         )
     }
 
-    override fun onInactive() {
+    public override fun onInactive() {
         super.onInactive()
         connectivityManager.unregisterNetworkCallback(connectivityManagerCallback)
     }

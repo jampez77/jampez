@@ -12,10 +12,10 @@ import com.example.jampez.data.interfaces.IConnectionRepository
 import com.example.jampez.data.interfaces.ITodoRepository
 import com.example.jampez.data.interfaces.IUserRepository
 import com.example.jampez.data.models.User
+import com.example.jampez.utils.Event
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.mockkClass
-import io.mockk.verify
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -24,14 +24,15 @@ import org.junit.Rule
 import org.junit.Test
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
-import org.koin.test.KoinTest
+import org.koin.test.AutoCloseKoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.get
 import org.koin.test.inject
 import org.koin.test.mock.MockProviderRule
 import retrofit2.Call
+import kotlin.test.assertNotEquals
 
-class TodoViewModelTest : KoinTest {
+class TodoViewModelTest : AutoCloseKoinTest() {
 
     private val todoViewModel by inject<TodoViewModel>()
     private val mockUser = User(1, "firstName", "email", "passwords", "image")
@@ -78,12 +79,14 @@ class TodoViewModelTest : KoinTest {
 
     @Test
     fun `test signOut`() {
-        val mockObserver: Observer<Boolean> = mockk(relaxed = true)
+        val mockObserver: Observer<Event<Unit>> = mockk(relaxed = true)
         todoViewModel.signOutButtonState.observeForever(mockObserver)
+
+        assertEquals(null, todoViewModel.signOutButtonState.value)
 
         todoViewModel.signOut()
 
-        verify { mockObserver.onChanged(true) }
+        assertNotEquals(null, todoViewModel.signOutButtonState.value)
     }
 
     @Test
